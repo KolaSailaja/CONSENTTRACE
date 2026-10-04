@@ -2,6 +2,51 @@
 
 CONSENTTRACE is an evidence-backed privacy operations investigation tool that reconstructs whether a consent withdrawal propagated through downstream systems and leaves a durable audit trail of the evidence.
 
+## Jury Quick Start
+
+**Fastest evaluation path:**
+
+1. Start the application using the setup instructions below.
+2. Open CONSENTTRACE at `http://localhost:3000`.
+3. Use customer **C1024**.
+4. Select purpose **MARKETING**.
+5. Run the investigation.
+6. Review the withdrawal timestamp: `2026-10-02T10:31:42+05:30`.
+7. Follow the downstream processing path.
+8. Inspect the evidence for **ETL Job #17**.
+9. Identify the first confirmed break.
+10. Continue to the marketing audience and export.
+11. Observe the processor result **UNKNOWN**.
+12. Open the evidence details to see why the result is unknown.
+
+### What the jury should evaluate
+
+The important demonstration is not simply the dashboard UI. Please evaluate whether CONSENTTRACE can:
+
+- reconstruct a consent-withdrawal timeline;
+- traverse downstream lineage using Neo4j;
+- correlate processing events with the withdrawal time;
+- attach evidence to findings;
+- distinguish `VERIFIED_STOPPED`, `STILL_ACTIVE`, `UNKNOWN`, `EXCEPTION`, `CONFLICTED`, and `PENDING`;
+- identify the **first confirmed downstream break**;
+- preserve uncertainty instead of treating missing evidence as proof;
+- support a human investigator's next verification/remediation step.
+
+### Important evaluation boundary
+
+CONSENTTRACE is an **evidence-backed investigation tool**, not a legal compliance decision engine.
+
+It does not:
+
+- declare an organization legally compliant or non-compliant;
+- provide legal advice;
+- automatically delete data;
+- automatically issue processor deletion commands;
+- treat `UNKNOWN` as `VERIFIED_STOPPED`;
+- treat static lineage alone as proof that processing occurred.
+
+All demonstration data is synthetic.
+
 ## Core principle
 
 The product does not decide legal compliance. It reconstructs the evidence so a human investigator can determine what happened and what remains uncertain.
