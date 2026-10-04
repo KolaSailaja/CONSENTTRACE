@@ -1,0 +1,11 @@
+system_id,name,type,owner_team,processor_flag,purpose_scope
+SYS-01,AcmePay Consumer App,APP,Product,FALSE,CUSTOMER_ACCOUNT
+SYS-02,Consent Service,CONSENT,Privacy Engineering,FALSE,CONSENT
+SYS-03,Customer Database,DATABASE,Data Platform,FALSE,MARKETING
+SYS-04,CRM,CRM,Sales Ops,FALSE,MARKETING
+SYS-05,CDC Event Stream,STREAM,Data Platform,FALSE,MARKETING
+SYS-06,Warehouse ETL,ETL,Analytics Engineering,FALSE,MARKETING
+SYS-07,Customer Analytics Table,DATASET,Analytics,FALSE,MARKETING
+SYS-08,Marketing Audience Job,JOB,Audience Ops,FALSE,MARKETING
+SYS-09,Processor X Export,EXPORT,Data Exchange,TRUE,MARKETING
+SYS-10,Processor X,PROCESSOR,Vendor Management,TRUE,MARKETING

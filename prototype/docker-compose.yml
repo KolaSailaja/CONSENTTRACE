@@ -1,0 +1,104 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-consenttrace}
+      POSTGRES_USER: ${POSTGRES_USER:-consenttrace}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-consenttrace}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-consenttrace} -d ${POSTGRES_DB:-consenttrace}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/sql:/docker-entrypoint-initdb.d
+    expose:
+      - "5432"
+
+  neo4j:
+    image: neo4j:5.20-community
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: ${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-consenttrace}
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "wget -qO- http://localhost:7474 >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 20s
+    volumes:
+      - neo4j_data:/data
+      - ./neo4j/schema:/var/lib/neo4j/import
+    expose:
+      - "7687"
+      - "7474"
+
+  backend:
+    build:
+      context: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-consenttrace}
+      POSTGRES_USER: ${POSTGRES_USER:-consenttrace}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-consenttrace}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-consenttrace}:${POSTGRES_PASSWORD:-consenttrace}@postgres:5432/${POSTGRES_DB:-consenttrace}
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: ${NEO4J_USER:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-consenttrace}
+      APP_ENV: ${APP_ENV:-development}
+      APP_MODE: ${APP_MODE:-SANDBOX}
+      REAL_STACK_MODE: "1"
+      SANDBOX_ENABLED: ${SANDBOX_ENABLED:-true}
+      API_KEY_PEPPER: ${API_KEY_PEPPER:-local-development-only-api-key-pepper}
+      API_KEY_ENCRYPTION_KEY: ${API_KEY_ENCRYPTION_KEY:-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=}
+      DEV_BOOTSTRAP_API_KEY: ${DEV_BOOTSTRAP_API_KEY-ct_00000000000000000000000000000001.local-only-demo-admin-key}
+      DEV_BOOTSTRAP_ORG_ID: org-acmepay-demo
+      SANDBOX_CONNECTOR_API_KEY: ${SANDBOX_CONNECTOR_API_KEY-ct_00000000000000000000000000000002.local-only-sandbox-connector}
+      SANDBOX_ADMIN_API_KEY: ${SANDBOX_ADMIN_API_KEY-ct_00000000000000000000000000000003.local-only-sandbox-admin}
+      MAX_JSON_BODY_BYTES: ${MAX_JSON_BODY_BYTES:-1048576}
+      MAX_INGESTION_EVENT_BYTES: ${MAX_INGESTION_EVENT_BYTES:-262144}
+      MAX_EVIDENCE_PAYLOAD_BYTES: ${MAX_EVIDENCE_PAYLOAD_BYTES:-65536}
+      RATE_LIMIT_AUTH_PER_MINUTE: ${RATE_LIMIT_AUTH_PER_MINUTE:-20}
+      RATE_LIMIT_INGEST_PER_MINUTE: ${RATE_LIMIT_INGEST_PER_MINUTE:-120}
+      RATE_LIMIT_INVESTIGATION_PER_MINUTE: ${RATE_LIMIT_INVESTIGATION_PER_MINUTE:-30}
+      HMAC_REPLAY_WINDOW_SECONDS: ${HMAC_REPLAY_WINDOW_SECONDS:-300}
+      PRODUCTION_ADMIN_API_KEY: ${PRODUCTION_ADMIN_API_KEY-}
+      PRODUCTION_ADMIN_ORG_ID: ${PRODUCTION_ADMIN_ORG_ID-}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      APP_MODE: ${APP_MODE:-SANDBOX}
+      CONSENTTRACE_BACKEND_URL: http://backend:8000
+      CONSENTTRACE_DEV_API_KEY: ${DEV_BOOTSTRAP_API_KEY:-ct_00000000000000000000000000000001.local-only-demo-admin-key}
+      CONSENTTRACE_SANDBOX_API_KEY: ${SANDBOX_ADMIN_API_KEY-ct_00000000000000000000000000000003.local-only-sandbox-admin}
+    ports:
+      - "3000:3000"
+    command: npm run start -- --hostname 0.0.0.0 --port 3000
+
+volumes:
+  postgres_data:
+  neo4j_data:

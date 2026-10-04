@@ -1,0 +1,4 @@
+mapping_id,source_system,source_identifier,canonical_customer_id,mapping_method,mapping_status,confidence_band,valid_from,valid_to,evidence_id
+IM-001,Consent Service,cust-1024,C1024,deterministic_customer_id,MATCHED,HIGH,2026-08-12T09:05:00+05:30,9999-12-31T00:00:00+00:00,EV-9901
+IM-002,CRM,crm-user-1024,C1024,deterministic_customer_id,MATCHED,HIGH,2026-08-12T09:05:00+05:30,9999-12-31T00:00:00+00:00,EV-9902
+IM-003,Warehouse ETL,customer_1024,C1024,deterministic_customer_id,MATCHED,HIGH,2026-08-12T09:05:00+05:30,9999-12-31T00:00:00+00:00,EV-9903

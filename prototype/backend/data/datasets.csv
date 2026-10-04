@@ -1,0 +1,13 @@
+dataset_id,system_id,name,contains_personal_data,purpose_scope,identifier_column
+DS-01,SYS-03,customer_db,TRUE,MARKETING,customer_id
+DS-02,SYS-04,crm_customer_profile,TRUE,MARKETING,customer_id
+DS-03,SYS-05,cdc_customer_events,TRUE,MARKETING,customer_id
+DS-04,SYS-06,warehouse_consent_dimension,TRUE,MARKETING,customer_id
+DS-05,SYS-07,customer_analytics_table,TRUE,MARKETING,customer_id
+DS-06,SYS-08,marketing_audience,TRUE,MARKETING,customer_id
+DS-07,SYS-09,processor_x_export,TRUE,MARKETING,customer_id
+DS-08,SYS-10,processor_x_inbox,TRUE,MARKETING,customer_id
+DS-09,SYS-03,customer_support_db,TRUE,SUPPORT,customer_id
+DS-10,SYS-06,product_analytics,TRUE,PRODUCT,customer_id
+DS-11,SYS-08,product_audience,TRUE,PRODUCT,customer_id
+DS-12,SYS-09,vendor_export,TRUE,PRODUCT,customer_id

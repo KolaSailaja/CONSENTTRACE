@@ -1,0 +1,3 @@
+exception_id,customer_id,purpose,system_id,basis,review_owner,valid_from,valid_to,evidence_id
+EXC-001,C1024,MARKETING,SYS-04,LEGAL_HOLD,DPO Office,2026-10-01T00:00:00+05:30,2026-10-05T00:00:00+05:30,EV-9001
+EXC-002,C1001,MARKETING,SYS-08,CONSENT_OPT_IN,Marketing Ops,2026-09-01T00:00:00+05:30,2026-12-31T00:00:00+05:30,EV-9002
